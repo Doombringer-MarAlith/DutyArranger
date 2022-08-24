@@ -1,0 +1,251 @@
+﻿<Window x:Class="DutyArranger.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DutyArranger"
+        xmlns:context="clr-namespace:DutyArranger.Source"
+        mc:Ignorable="d"
+        Title="DutyArranger"
+        WindowState="Maximized">
+    <Window.Resources>
+        <Style TargetType="{x:Type DatePickerTextBox}">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
+            <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
+            <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DatePickerTextBox">
+                        <Grid>
+                            <Grid.Resources>
+                                <SolidColorBrush x:Key="WatermarkBrush" Color="#FFAAAAAA"/>
+                            </Grid.Resources>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup Name="CommonStates">
+                                    <VisualStateGroup.Transitions>
+                                        <VisualTransition GeneratedDuration="0" />
+                                        <VisualTransition To="MouseOver" GeneratedDuration="0:0:0.1" />
+                                    </VisualStateGroup.Transitions>
+                                    <VisualState Name="Normal" />
+                                    <VisualState Name="MouseOver">
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="ContentElement" Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" To="#FF99C1E2" Duration="0"/>
+                                            <ColorAnimation Storyboard.TargetName="watermark_decorator" Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" To="#FF99C1E2" Duration="0"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                                <VisualStateGroup Name="WatermarkStates">
+                                    <VisualStateGroup.Transitions>
+                                        <VisualTransition GeneratedDuration="0" />
+                                    </VisualStateGroup.Transitions>
+                                    <VisualState Name="Unwatermarked" />
+                                    <VisualState Name="Watermarked">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="ContentElement" Storyboard.TargetProperty="Opacity" To="0" Duration="0" />
+                                            <DoubleAnimation Storyboard.TargetName="PART_Watermark" Storyboard.TargetProperty="Opacity" To="1" Duration="0" />
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                                <VisualStateGroup Name="FocusStates">
+                                    <VisualStateGroup.Transitions>
+                                        <VisualTransition GeneratedDuration="0" />
+                                    </VisualStateGroup.Transitions>
+                                    <VisualState Name="Unfocused" />
+                                    <VisualState Name="Focused">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="FocusVisual" Storyboard.TargetProperty="Opacity" To="1" Duration="0" />
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+
+
+                            <Border x:Name="Border" 
+                            Background="{TemplateBinding Background}" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="{TemplateBinding Padding}"
+                            CornerRadius="1" 
+                            Opacity="1">
+                                <Grid x:Name="WatermarkContent"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                    <Border x:Name="ContentElement" BorderThickness="1">
+                                        <Border.BorderBrush>
+                                            <SolidColorBrush Color="#FFFFFFFF"/>
+                                        </Border.BorderBrush>
+                                    </Border>
+                                    <Border x:Name="watermark_decorator" BorderThickness="1">
+                                        <Border.BorderBrush>
+                                            <SolidColorBrush Color="#FFFFFFFF"/>
+                                        </Border.BorderBrush>
+                                        <ContentControl x:Name="PART_Watermark"
+                                                    Opacity="0"
+                                                    Focusable="False"
+                                                    IsHitTestVisible="False"
+                                                    Padding="2">
+                                            <ContentControl.Template>
+                                                <ControlTemplate>
+                                                    <TextBlock Text="Pasirinkite datą..."/>
+                                                </ControlTemplate>
+                                            </ContentControl.Template>
+                                        </ContentControl>
+                                    </Border>
+                                    <ScrollViewer x:Name="PART_ContentHost" 
+                                          Margin="0"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                    <Border x:Name="FocusVisual" BorderBrush="#FF45D6FA" CornerRadius="1" Opacity="0" IsHitTestVisible="False"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Viewbox x:Key="questionMark">
+            <Canvas Width="512"
+                    Height="512">
+                <Canvas.RenderTransform>
+                    <TranslateTransform X="0"
+                                        Y="0" />
+                </Canvas.RenderTransform>
+                <Canvas.Resources />
+                <Canvas>
+                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          Fill="Black"
+                          Opacity="0.8">
+                        <Path.Data>
+                            <PathGeometry Figures="M10,19H13V22H10V19M12,2C17.35,2.22 19.68,7.62 16.5,11.67C15.67,12.67 14.33,13.33 13.67,14.17C13,15 13,16 13,17H10C10,15.33 10,13.92 10.67,12.92C11.33,11.92 12.67,11.33 13.5,10.67C15.92,8.43 15.32,5.26 12,5A3,3 0 0,0 9,8H6A6,6 0 0,1 12,2Z"
+                                          FillRule="NonZero" />
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+            </Canvas>
+        </Viewbox>
+    </Window.Resources>
+    
+    <Grid HorizontalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="0.25*" />
+            <ColumnDefinition Width="0.5*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="4*" />
+            <RowDefinition Height="2*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Column="0" Grid.Row="0" Margin="30,30,30,30" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button Content="1. Pasirinkti duomenų failą." Command="{Binding Path=ChooseInputSourceCommand}"/>
+            <StackPanel Grid.Column="2" Grid.Row="0" Margin="15">
+                <DatePicker Name="DatePicker" SelectedDate="{Binding Path=SelectedDate}" local:DatePickerCalendar.IsMonthYear="True" local:DatePickerDateFormat.DateFormat="MM/yyyy" IsEnabled="{Binding EnableSelectingDate}"/>
+            </StackPanel>
+            <Button Content="2. Nuskaityti praėjusių mėnesių duomenis." Command="{Binding Path=ReadPreviousDataCommand}" />
+            <Button Content="3. Sudaryti grafiką." Command="{Binding Path=FormulateDataCommand}"/>
+
+            <Label Content="Nurodykite padalinio, kuriam kuriamas budėjimo grafikas, pavadinimą:" />
+            <TextBox Text="{Binding Path=DivisionName}" />
+
+            <Label Content="Nurodykite asmenį, tvirtinantį grafiką:" />
+
+            <Grid Margin="20,0,20,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Grid.Row="1">
+                    <Label Content="Padalinys" />
+                    <TextBox Text="{Binding Path=Division}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Grid.Row="1">
+                    <Label Content="Vardas pavardė" />
+                    <TextBox Text="{Binding Path=MakerName}"/>
+                </StackPanel>
+            </Grid>
+            <Button Content="4. Išvesti rezultatus į failą." Command="{Binding Path=OutputDataCommand}"/>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,30,0" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <Grid Name="questionBox1" Background="DarkGreen" Width="17" Height="17" Margin="0,0,0,110" Mouse.MouseEnter="questionBox1_MouseEnter" Mouse.MouseLeave="questionBox1_MouseLeave">
+                <Grid.OpacityMask>
+                    <VisualBrush Visual="{StaticResource questionMark}" />
+                </Grid.OpacityMask>
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="False">
+                                <Setter Property="Opacity" Value="0.5"></Setter>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="1"></Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+            </Grid>
+            <Grid Name="questionBox2" Background="DarkGreen" Width="17" Height="17" Margin="0,0,0,50" Mouse.MouseEnter="questionBox2_MouseEnter" Mouse.MouseLeave="questionBox2_MouseLeave">
+                <Grid.OpacityMask>
+                    <VisualBrush Visual="{StaticResource questionMark}" />
+                </Grid.OpacityMask>
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="False">
+                                <Setter Property="Opacity" Value="0.5"></Setter>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="1"></Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+            </Grid>
+            <Grid Name="questionBox3" Background="DarkGreen" Width="17" Height="17" Margin="0,0,0,20" Mouse.MouseEnter="questionBox3_MouseEnter" Mouse.MouseLeave="questionBox3_MouseLeave">
+                <Grid.OpacityMask>
+                    <VisualBrush Visual="{StaticResource questionMark}" />
+                </Grid.OpacityMask>
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="False">
+                                <Setter Property="Opacity" Value="0.5"></Setter>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="1"></Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+            </Grid>
+        </StackPanel>
+
+        <StackPanel Grid.Column="2" VerticalAlignment="Center" Name="questionBox1Tooltip" Visibility="Hidden">
+            <Border Background="LightGoldenrodYellow" CornerRadius="10" Padding="10">
+                <TextBlock TextWrapping="Wrap"
+                       Text="Duomenų failo pirmame stulpelyje privalo būti kario vardas bei pavardė, sekančiuose stulpeliuose galima nurodyti mėnesių dienas, kuriomis karys negalės budėti. Pvz.: [Vardas Pavardė][05/07][05/12][05/21-05/29].">
+                </TextBlock>
+            </Border>
+        </StackPanel>
+        <StackPanel Grid.Column="2" VerticalAlignment="Center" Name="questionBox2Tooltip" Visibility="Hidden">
+            <Border Background="LightGoldenrodYellow" CornerRadius="10" Padding="10">
+                <TextBlock TextWrapping="Wrap"
+                       Text="Pvz.:      III PK">
+                </TextBlock>
+            </Border>
+        </StackPanel>
+        <StackPanel Grid.Column="2" VerticalAlignment="Center" Name="questionBox3Tooltip" Visibility="Hidden">
+            <Border Background="LightGoldenrodYellow" CornerRadius="10" Padding="10">
+                <TextBlock TextWrapping="Wrap"
+                       Text="Pvz.:      III PK vadas         kpt. V. Pavardenis">
+                </TextBlock>
+            </Border>
+        </StackPanel>
+    </Grid>
+</Window>
